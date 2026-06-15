@@ -8,39 +8,72 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #080808;
+            background: #050505;
             color: #d4d4d4;
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-            line-height: 1.9;
+            line-height: 1.8;
             font-size: 17.5px;
             font-weight: 300;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            overflow-x: hidden;
         }
 
-        ::selection {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+        ::selection { background: rgba(255,255,255,0.12); color: #fff; }
+
+        .planet-wrapper {
+            position: fixed;
+            top: 50%;
+            right: -180px;
+            transform: translateY(-50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .planet {
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%,
+                #1a3a5c 0%,
+                #0d2137 30%,
+                #091520 60%,
+                #040a0f 100%
+            );
+            box-shadow:
+                inset -20px -20px 60px rgba(0,0,0,0.8),
+                inset 8px 8px 30px rgba(100,180,255,0.06),
+                0 0 80px rgba(40,120,200,0.08),
+                0 0 200px rgba(30,80,140,0.04);
+            transition: transform 0.05s linear;
+        }
+
+        .planet::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(120,180,255,0.04) 0%,
+                transparent 50%
+            );
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             max-width: 700px;
             margin: 0 auto;
-            padding: 100px 28px 140px;
+            padding: 48px 28px 80px;
         }
 
         .blog-header {
-            margin-bottom: 64px;
-            padding-bottom: 48px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
         h1 {
@@ -49,7 +82,7 @@
             font-weight: 700;
             color: #ffffff;
             letter-spacing: -0.5px;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             line-height: 1.15;
         }
 
@@ -66,23 +99,20 @@
             font-family: 'Playfair Display', Georgia, serif;
             font-style: italic;
             color: #777;
-            margin-bottom: 48px;
+            margin-bottom: 16px;
             font-size: 18px;
-            line-height: 1.85;
+            line-height: 1.75;
         }
 
-        p {
-            margin-bottom: 28px;
-            letter-spacing: 0.015em;
-        }
+        p { margin-bottom: 16px; letter-spacing: 0.015em; }
 
         h2 {
             font-family: 'Playfair Display', Georgia, serif;
             font-size: 34px;
             font-weight: 600;
             color: #ffffff;
-            margin-top: 28px;
-            margin-bottom: 24px;
+            margin-top: 8px;
+            margin-bottom: 16px;
             letter-spacing: -0.3px;
             line-height: 1.2;
         }
@@ -92,68 +122,55 @@
             font-size: 24px;
             font-weight: 600;
             color: #eeeeee;
-            margin-top: 28px;
-            margin-bottom: 16px;
+            margin-top: 16px;
+            margin-bottom: 12px;
         }
 
-        strong {
-            font-weight: 500;
-            color: #ffffff;
-        }
+        strong { font-weight: 500; color: #ffffff; }
 
         .separator {
             text-align: center;
-            margin: 36px 0;
+            margin: 16px 0;
             color: #2a2a2a;
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
+            font-size: 16px;
             letter-spacing: 12px;
         }
 
-        .image-block {
-            margin: 44px 0;
-            text-align: center;
-        }
+        .image-block { margin: 20px 0; text-align: center; }
 
         .image-block img {
             max-width: 100%;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 8px 48px rgba(0,0,0,0.6);
         }
 
-        .image-block.small img {
-            max-width: 50%;
-        }
+        .image-block.small img { max-width: 50%; }
 
         .image-block .caption {
             font-size: 12.5px;
             color: #4a4a4a;
-            margin-top: 16px;
+            margin-top: 10px;
             font-weight: 300;
             letter-spacing: 0.04em;
         }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 56px 20px 80px;
-            }
-            h1 {
-                font-size: 38px;
-            }
-            h2 {
-                font-size: 26px;
-            }
-            body {
-                font-size: 16px;
-            }
-            .image-block.small img {
-                max-width: 80%;
-            }
+            .container { padding: 32px 20px 60px; }
+            h1 { font-size: 38px; }
+            h2 { font-size: 26px; }
+            body { font-size: 16px; }
+            .image-block.small img { max-width: 80%; }
+            .planet-wrapper { right: -260px; }
+            .planet { width: 320px; height: 320px; }
         }
     </style>
 </head>
 <body>
+    <div class="planet-wrapper">
+        <div class="planet" id="planet"></div>
+    </div>
+
     <div class="container">
         <div class="blog-header">
             <h1>And I was wrong</h1>
@@ -225,5 +242,14 @@
 
         <p>If I had to explain vaguely about its measuring system, I would put it this way. All AI models measure the work done for you through tokens. Tokens are just chunks of text — words, parts of words — that go in and come out. The model itself is a fixed network of neurons with fixed weights, trained once on massive data. When you give it more tokens, it's not creating new neurons — it's running more text through the same network, using attention to figure out which parts of your input matter most to give back correct results without hallucinating much. At the end it's all about how those neurons were trained and optimised that defines the performance of a model. That's a topic to explore and for another blog another time.</p>
     </div>
+
+    <script>
+        const planet = document.getElementById('planet');
+        let rotation = 0;
+        window.addEventListener('scroll', function() {
+            rotation = window.scrollY * 0.15;
+            planet.style.transform = 'rotate(' + rotation + 'deg)';
+        });
+    </script>
 </body>
 </html>
