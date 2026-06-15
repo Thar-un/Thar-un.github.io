@@ -70,7 +70,7 @@
         .intro {
             font-family: 'Playfair Display', Georgia, serif;
             font-style: italic;
-            color: #777;
+            color: #ffffff;
             margin-bottom: 16px;
             font-size: 18px;
             line-height: 1.75;
@@ -133,13 +133,13 @@
             margin-bottom: 0;
             font-family: 'Outfit', sans-serif;
             font-size: 13px;
-            color: #3a3a3a;
+            color: #ffffff;
             font-weight: 300;
             letter-spacing: 2px;
         }
 
         .visitor-count span {
-            color: #555;
+            color: #ffffff;
             font-weight: 400;
         }
 
@@ -330,8 +330,7 @@
     </script>
     <script>
         (function() {
-            var key = 'th3r7n-blog-1';
-            fetch('https://api.counterapi.dev/v1/' + key + '/up')
+            fetch('https://api.counterapi.dev/v1/th3r7n/blog-1/up')
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     document.getElementById('visit-count').textContent = data.count || '—';
