@@ -127,9 +127,25 @@
             letter-spacing: 0.04em;
         }
 
+        .visitor-count {
+            text-align: center;
+            margin-top: 36px;
+            margin-bottom: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            color: #3a3a3a;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .visitor-count span {
+            color: #555;
+            font-weight: 400;
+        }
+
         .signature {
             text-align: right;
-            margin-top: 40px;
+            margin-top: 12px;
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.06);
             font-family: 'Playfair Display', Georgia, serif;
@@ -224,6 +240,7 @@
 
         <p>If I had to explain vaguely about its measuring system, I would put it this way. All AI models measure the work done for you through tokens. Tokens are just chunks of text — words, parts of words — that go in and come out. The model itself is a fixed network of neurons with fixed weights, trained once on massive data. When you give it more tokens, it's not creating new neurons — it's running more text through the same network, using attention to figure out which parts of your input matter most to give back correct results without hallucinating much. At the end it's all about how those neurons were trained and optimised that defines the performance of a model. That's a topic to explore and for another blog another time.</p>
 
+        <p class="visitor-count">visitors: <span id="visit-count">...</span></p>
         <p class="signature">&mdash; th3r7n</p>
     </div>
 
@@ -310,6 +327,19 @@
         }
 
         requestAnimationFrame(draw);
+    </script>
+    <script>
+        (function() {
+            var key = 'th3r7n-blog-1';
+            fetch('https://api.counterapi.dev/v1/' + key + '/up')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    document.getElementById('visit-count').textContent = data.count || '—';
+                })
+                .catch(function() {
+                    document.getElementById('visit-count').textContent = '—';
+                });
+        })();
     </script>
 </body>
 </html>

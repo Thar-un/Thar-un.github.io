@@ -171,9 +171,25 @@
             color: #6ee7b7;
         }
 
+        .visitor-count {
+            text-align: center;
+            margin-top: 36px;
+            margin-bottom: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            color: #3a3a3a;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .visitor-count span {
+            color: #555;
+            font-weight: 400;
+        }
+
         .signature {
             text-align: right;
-            margin-top: 40px;
+            margin-top: 12px;
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.06);
             font-family: 'Playfair Display', Georgia, serif;
@@ -320,6 +336,7 @@
 
         <p>For clinical ultrasound, where the difference between a clear organ boundary and a blurred one can affect diagnosis, this matters.</p>
 
+        <p class="visitor-count">visitors: <span id="visit-count">...</span></p>
         <p class="signature">&mdash; th3r7n</p>
     </div>
 
@@ -406,6 +423,19 @@
         }
 
         requestAnimationFrame(draw);
+    </script>
+    <script>
+        (function() {
+            var key = 'th3r7n-blog-2';
+            fetch('https://api.counterapi.dev/v1/' + key + '/up')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    document.getElementById('visit-count').textContent = data.count || '—';
+                })
+                .catch(function() {
+                    document.getElementById('visit-count').textContent = '—';
+                });
+        })();
     </script>
 </body>
 </html>
