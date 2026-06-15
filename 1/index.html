@@ -26,20 +26,22 @@
 
         .aurora {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: -20%;
+            left: -20%;
             width: 200%;
-            height: 100vh;
+            height: 140%;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.4;
+            opacity: 0.6;
             background:
-                radial-gradient(ellipse 600px 300px at 20% 30%, rgba(0,255,140,0.18) 0%, transparent 70%),
-                radial-gradient(ellipse 500px 250px at 40% 50%, rgba(0,200,255,0.12) 0%, transparent 70%),
-                radial-gradient(ellipse 700px 200px at 10% 60%, rgba(100,0,255,0.1) 0%, transparent 70%),
-                radial-gradient(ellipse 400px 350px at 30% 20%, rgba(0,255,200,0.08) 0%, transparent 70%),
-                radial-gradient(ellipse 550px 180px at 50% 70%, rgba(150,50,255,0.07) 0%, transparent 70%);
-            filter: blur(40px);
+                radial-gradient(ellipse at 20% 30%, rgba(0,255,140,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 45% 55%, rgba(0,180,255,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 10% 65%, rgba(120,0,255,0.18) 0%, transparent 50%),
+                radial-gradient(ellipse at 35% 20%, rgba(0,255,200,0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 55% 75%, rgba(160,50,255,0.12) 0%, transparent 50%);
+            -webkit-filter: blur(60px);
+            filter: blur(60px);
+            -webkit-transform-origin: center center;
             transform-origin: center center;
             will-change: transform;
         }
@@ -137,6 +139,18 @@
             letter-spacing: 0.04em;
         }
 
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #555;
+            letter-spacing: 0.02em;
+        }
+
         @media (max-width: 600px) {
             .container { padding: 32px 20px 60px; }
             h1 { font-size: 38px; }
@@ -219,6 +233,8 @@
         <p>Two months later in April I finally heard and tried Claude Code. It was a great experience and my daily driver now includes Claude Code and it effortlessly does almost 40% of my work.</p>
 
         <p>If I had to explain vaguely about its measuring system, I would put it this way. All AI models measure the work done for you through tokens. Tokens are just chunks of text — words, parts of words — that go in and come out. The model itself is a fixed network of neurons with fixed weights, trained once on massive data. When you give it more tokens, it's not creating new neurons — it's running more text through the same network, using attention to figure out which parts of your input matter most to give back correct results without hallucinating much. At the end it's all about how those neurons were trained and optimised that defines the performance of a model. That's a topic to explore and for another blog another time.</p>
+
+        <p class="signature">&mdash; th3r7n</p>
     </div>
 
     <script>
