@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>And I was wrong</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
@@ -14,126 +12,145 @@
         }
 
         body {
-            background: #fafafa;
-            color: #1a1a1a;
-            font-family: 'Merriweather', Georgia, serif;
-            line-height: 1.9;
-            font-size: 17px;
+            background: #0a0a0a;
+            color: #e8e8e8;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.85;
+            font-size: 18px;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        ::selection {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
         }
 
         .container {
-            max-width: 680px;
+            max-width: 720px;
             margin: 0 auto;
-            padding: 60px 24px 100px;
+            padding: 80px 28px 120px;
         }
 
         .blog-header {
-            margin-bottom: 48px;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 32px;
+            margin-bottom: 56px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         h1 {
-            font-family: 'Inter', sans-serif;
-            font-size: 40px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            font-size: 48px;
             font-weight: 700;
-            color: #111;
-            letter-spacing: -0.5px;
-            margin-bottom: 12px;
-            line-height: 1.2;
+            color: #ffffff;
+            letter-spacing: -1.2px;
+            margin-bottom: 14px;
+            line-height: 1.1;
         }
 
         .subtitle {
-            font-size: 15px;
-            color: #888;
-            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #555;
             font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .intro {
             font-style: italic;
-            color: #555;
-            margin-bottom: 40px;
-            font-size: 16px;
+            color: #888;
+            margin-bottom: 44px;
+            font-size: 17px;
+            line-height: 1.9;
         }
 
         p {
-            margin-bottom: 24px;
+            margin-bottom: 26px;
+            font-weight: 300;
+            letter-spacing: 0.01em;
         }
 
         h2 {
-            font-family: 'Inter', sans-serif;
-            font-size: 26px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            font-size: 30px;
             font-weight: 600;
-            color: #111;
-            margin-top: 56px;
-            margin-bottom: 24px;
-            letter-spacing: -0.3px;
+            color: #ffffff;
+            margin-top: 64px;
+            margin-bottom: 28px;
+            letter-spacing: -0.5px;
         }
 
         h3 {
-            font-family: 'Inter', sans-serif;
-            font-size: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            font-size: 22px;
             font-weight: 600;
-            color: #222;
-            margin-top: 40px;
-            margin-bottom: 16px;
+            color: #f0f0f0;
+            margin-top: 44px;
+            margin-bottom: 18px;
+            letter-spacing: -0.3px;
         }
 
         strong {
-            font-weight: 700;
-            color: #111;
+            font-weight: 600;
+            color: #ffffff;
         }
 
         .separator {
             text-align: center;
-            margin: 48px 0;
-            color: #ccc;
-            font-size: 24px;
-            letter-spacing: 12px;
+            margin: 56px 0;
+            color: #333;
+            font-size: 20px;
+            letter-spacing: 16px;
         }
 
         .image-block {
-            margin: 32px 0;
+            margin: 40px -20px;
             text-align: center;
         }
 
         .image-block img {
             max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
         }
 
         .image-block .caption {
             font-size: 13px;
-            color: #999;
-            margin-top: 10px;
-            font-family: 'Inter', sans-serif;
+            color: #555;
+            margin-top: 14px;
+            font-weight: 400;
+            letter-spacing: 0.02em;
         }
 
         .closing {
-            margin-top: 56px;
-            padding-top: 32px;
-            border-top: 1px solid #e0e0e0;
+            margin-top: 64px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             font-style: italic;
-            color: #444;
+            color: #777;
             text-align: center;
-            line-height: 2;
+            line-height: 2.1;
+            font-size: 17px;
         }
 
         @media (max-width: 600px) {
             .container {
-                padding: 32px 18px 60px;
+                padding: 48px 20px 80px;
             }
             h1 {
-                font-size: 30px;
+                font-size: 34px;
+                letter-spacing: -0.8px;
             }
             h2 {
-                font-size: 22px;
+                font-size: 24px;
             }
             body {
                 font-size: 16px;
+            }
+            .image-block {
+                margin: 32px -10px;
             }
         }
     </style>
@@ -153,7 +170,7 @@
 
         <p>For the project, I did have an idea on Neural Networks, Attention and weight structures. But once it's finished I left all the work as it is, maybe a mistake?</p>
 
-        <div class="separator">. . .</div>
+        <div class="separator">&mdash;</div>
 
         <h2>What Actually Changed</h2>
 
@@ -190,7 +207,7 @@
 
         <p>The CNN I worked on could look at an image and classify it. The same core math — neurons, weights, activation functions, gradient descent — scaled up with attention, can now read code, hold conversations, and run commands in my terminal. Same ingredients. Different recipe. The recipe was attention.</p>
 
-        <div class="separator">. . .</div>
+        <div class="separator">&mdash;</div>
 
         <h2>Back to the Story</h2>
 
