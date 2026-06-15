@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted IDORs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #050505;
+            color: #d4d4d4;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            line-height: 1.8;
+            font-size: 17.5px;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
+        }
+
+        ::selection { background: rgba(255,255,255,0.12); color: #fff; }
+
+        #aurora-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 48px 28px 80px;
+        }
+
+        .blog-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 56px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            line-height: 1.15;
+        }
+
+        .subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            color: #484848;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            color: #777;
+            margin-bottom: 16px;
+            font-size: 18px;
+            line-height: 1.75;
+        }
+
+        p { margin-bottom: 16px; letter-spacing: 0.015em; }
+
+        h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 34px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #eeeeee;
+            margin-top: 16px;
+            margin-bottom: 12px;
+        }
+
+        strong { font-weight: 500; color: #ffffff; }
+
+        .separator {
+            text-align: center;
+            margin: 16px 0;
+            color: #2a2a2a;
+            font-size: 16px;
+            letter-spacing: 12px;
+        }
+
+        ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            color: #d4d4d4;
+        }
+
+        ol li {
+            margin-bottom: 6px;
+            letter-spacing: 0.015em;
+        }
+
+        .visitor-count {
+            text-align: center;
+            margin-top: 36px;
+            margin-bottom: 0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            color: #ffffff;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .visitor-count span {
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 12px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #d4d4d4;
+            letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 32px 20px 60px; }
+            h1 { font-size: 38px; }
+            h2 { font-size: 26px; }
+            body { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="aurora-canvas"></canvas>
+
+    <div class="container">
+        <div class="blog-header">
+            <h1>Encrypted IDORs</h1>
+            <p class="subtitle">A bug bounty story</p>
+        </div>
+
+        <p class="intro">This post describes a vulnerability I found and responsibly disclosed through a bug bounty program. All identifying details are intentionally removed.</p>
+
+        <p>I was scrolling through HackerOne notifications when I saw it. <strong>+2 reputation.</strong> If you're in bug bounty, you know what that means &mdash; a report you were tracking just got resolved. A fix went live somewhere.</p>
+
+        <p>Most people see +2 and move on. I opened Burp Suite.</p>
+
+        <p>I had filed a report on this target months ago &mdash; an image processing platform. My report got marked as a duplicate of someone else's finding, which stung. But now the original was resolved, meaning the engineering team shipped a patch.</p>
+
+        <p>The question that keeps me up at night after every +2: <strong>did they actually fix it, or did they just fix the specific reproduction steps?</strong></p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <p>The platform's image security works in two layers. Every photo gets a numeric ID when uploaded. But you can't use that raw ID to view the image. The platform encrypts it into a token first, and only the encrypted version works in the render URL. Think of it as a locked door &mdash; the numeric ID is the address, the encrypted token is the key.</p>
+
+        <p>The original bug was about getting keys for doors you don't own. The fix was supposed to stop that.</p>
+
+        <p>I fired up the same endpoint that was patched. Sent a request with someone else's asset ID in the body. My auth token. Their image ID.</p>
+
+        <p>The response came back with their encrypted token sitting right there in the JSON.</p>
+
+        <p>The door was still handing out keys to anyone who asked.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>Pushing It</h2>
+
+        <p>The first version of my report had a constraint &mdash; the victim needed to share at least one image with the attacker first. From a shared image's metadata, you could extract account identifiers and ID patterns to enumerate everything else.</p>
+
+        <p>But "requires victim interaction" is the kind of phrase that gets your severity dropped. I wanted zero interaction.</p>
+
+        <p>So I started studying the IDs.</p>
+
+        <p>The asset IDs are 16 digits long. Sounds like a lot. Except they're not random. A big chunk of the digits at the start and end are constant across users. That leaves roughly <strong>6 digits in the middle</strong> that actually vary. A million combinations. My laptop can chew through that before lunch.</p>
+
+        <p>The account IDs? Same story. Numeric, pattern-based, with a small window of real entropy.</p>
+
+        <p>And the same endpoint that encrypts asset IDs will also encrypt account IDs if you feed them in. It doesn't validate what you give it. It just encrypts and returns.</p>
+
+        <p>So the full chain became:</p>
+
+        <ol>
+            <li>Brute-force the middle digits of asset IDs &mdash; collect encrypted tokens for every valid image</li>
+            <li>Brute-force account IDs the same way &mdash; get encrypted account identifiers</li>
+            <li>One more value needed for the render URL is common across all users</li>
+            <li>Construct the render URL with all three encrypted values</li>
+            <li>Follow the redirect. Private image loads.</li>
+        </ol>
+
+        <p>I automated the whole thing. The final severity was <strong>High</strong>.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>Three Things That Made This Work</h2>
+
+        <p><strong>The encryption endpoint had no ownership check.</strong> Its job was to convert numeric IDs into encrypted tokens. But it did this for any ID you asked about, not just your own. Imagine a locksmith who cuts keys for any address you give them, no questions asked.</p>
+
+        <p><strong>Predictable numeric IDs.</strong> Sixteen digits sounds intimidating until you realise most of them are constant across users. Six digits of actual entropy is a million possibilities &mdash; minutes of automated requests, not years.</p>
+
+        <p><strong>The render endpoint trusted the token blindly.</strong> Once you had the encrypted values, the image was served with no additional auth check. The entire security model rested on one assumption: <em>"they can't get the encrypted token."</em> And that assumption was broken.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>What I Took Away</h2>
+
+        <p><strong>Don't accept the first severity rating.</strong> If you believe the impact is higher, demonstrate it. A working script pulling private data beats paragraphs about CVSS vectors.</p>
+
+        <p class="visitor-count">visitors: <span id="visit-count">...</span></p>
+        <p class="signature">&mdash; th3r7n</p>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('aurora-canvas');
+        var ctx = canvas.getContext('2d');
+        var scrollOffset = 0;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        window.addEventListener('scroll', function() {
+            scrollOffset = window.scrollY;
+        });
+
+        var bands = [
+            { y: 0.25, speed: 0.3, color1: [0, 255, 120], color2: [0, 180, 255], width: 0.18, amp: 40 },
+            { y: 0.40, speed: 0.2, color1: [80, 0, 255],  color2: [0, 255, 180], width: 0.14, amp: 50 },
+            { y: 0.55, speed: 0.4, color1: [0, 200, 255], color2: [120, 0, 255], width: 0.12, amp: 35 },
+            { y: 0.70, speed: 0.25, color1: [0, 255, 100], color2: [80, 50, 255], width: 0.10, amp: 45 }
+        ];
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function draw(time) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            var angle = scrollOffset * 0.015;
+            var shiftX = scrollOffset * 0.12;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.translate(-canvas.width / 2 + shiftX, -canvas.height / 2);
+
+            for (var b = 0; b < bands.length; b++) {
+                var band = bands[b];
+                var baseY = canvas.height * band.y;
+                var bandH = canvas.height * band.width;
+
+                ctx.beginPath();
+                ctx.moveTo(-100, baseY + bandH);
+
+                for (var x = -100; x <= canvas.width + 100; x += 4) {
+                    var wave1 = Math.sin((x * 0.003) + (time * 0.0005 * band.speed)) * band.amp;
+                    var wave2 = Math.sin((x * 0.007) + (time * 0.0003 * band.speed) + 2) * band.amp * 0.5;
+                    var wave3 = Math.sin((x * 0.001) + (time * 0.0002)) * band.amp * 0.8;
+                    var y = baseY + wave1 + wave2 + wave3;
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.lineTo(canvas.width + 100, baseY + bandH);
+
+                for (var x2 = canvas.width + 100; x2 >= -100; x2 -= 4) {
+                    var wave1b = Math.sin((x2 * 0.003) + (time * 0.0005 * band.speed) + 1) * band.amp * 0.6;
+                    var wave2b = Math.sin((x2 * 0.005) + (time * 0.0004 * band.speed)) * band.amp * 0.3;
+                    var yb = baseY + bandH + wave1b + wave2b;
+                    ctx.lineTo(x2, yb);
+                }
+
+                ctx.closePath();
+
+                var grad = ctx.createLinearGradient(0, baseY - band.amp, canvas.width, baseY + bandH + band.amp);
+                var c1 = band.color1;
+                var c2 = band.color2;
+                grad.addColorStop(0, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',0)');
+                grad.addColorStop(0.3, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',0.35)');
+                grad.addColorStop(0.5, 'rgba(' + lerp(c1[0],c2[0],0.5) + ',' + lerp(c1[1],c2[1],0.5) + ',' + lerp(c1[2],c2[2],0.5) + ',0.5)');
+                grad.addColorStop(0.7, 'rgba(' + c2[0] + ',' + c2[1] + ',' + c2[2] + ',0.35)');
+                grad.addColorStop(1, 'rgba(' + c2[0] + ',' + c2[1] + ',' + c2[2] + ',0)');
+
+                ctx.fillStyle = grad;
+                ctx.filter = 'blur(20px)';
+                ctx.fill();
+                ctx.filter = 'none';
+            }
+
+            ctx.restore();
+            requestAnimationFrame(draw);
+        }
+
+        requestAnimationFrame(draw);
+    </script>
+    <script>
+        (function() {
+            fetch('https://api.counterapi.dev/v1/th3r7n/blog-3/up')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    document.getElementById('visit-count').textContent = data.count || '—';
+                })
+                .catch(function() {
+                    document.getElementById('visit-count').textContent = '—';
+                });
+        })();
+    </script>
+</body>
+</html>
