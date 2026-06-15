@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attention based Spatial U-Net</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #050505;
+            color: #d4d4d4;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            line-height: 1.8;
+            font-size: 17.5px;
+            font-weight: 300;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
+        }
+
+        ::selection { background: rgba(255,255,255,0.12); color: #fff; }
+
+        #aurora-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 48px 28px 80px;
+        }
+
+        .blog-header {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 56px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            line-height: 1.15;
+        }
+
+        .subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            color: #484848;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            color: #777;
+            margin-bottom: 16px;
+            font-size: 18px;
+            line-height: 1.75;
+        }
+
+        p { margin-bottom: 16px; letter-spacing: 0.015em; }
+
+        h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 34px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #eeeeee;
+            margin-top: 16px;
+            margin-bottom: 12px;
+        }
+
+        strong { font-weight: 500; color: #ffffff; }
+
+        .separator {
+            text-align: center;
+            margin: 16px 0;
+            color: #2a2a2a;
+            font-size: 16px;
+            letter-spacing: 12px;
+        }
+
+        .diagram {
+            margin: 24px 0;
+            padding: 28px 24px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            font-family: 'Outfit', monospace;
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            line-height: 2;
+            letter-spacing: 0.5px;
+        }
+
+        .diagram .label {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .diagram .flow {
+            color: #6ee7b7;
+            font-weight: 400;
+        }
+
+        .diagram .arrow {
+            color: #555;
+        }
+
+        .metric-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .metric-table th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .metric-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #aaa;
+        }
+
+        .metric-table tr:last-child td {
+            color: #6ee7b7;
+            font-weight: 400;
+        }
+
+        .highlight {
+            color: #6ee7b7;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #d4d4d4;
+            letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 32px 20px 60px; }
+            h1 { font-size: 38px; }
+            h2 { font-size: 26px; }
+            body { font-size: 16px; }
+            .diagram { font-size: 12px; padding: 20px 16px; }
+            .metric-table { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="aurora-canvas"></canvas>
+
+    <div class="container">
+        <div class="blog-header">
+            <h1>Attention based Spatial U-Net</h1>
+            <p class="subtitle">Cleaning ultrasound images with deep learning</p>
+        </div>
+
+        <p class="intro">A deep learning approach to removing speckle noise from clinical ultrasound images while preserving the structures doctors actually need to see.</p>
+
+        <h2>The Problem</h2>
+
+        <p>Ultrasound imaging works by sending high-frequency sound waves into the body. A transducer on the skin picks up the echoes bouncing off organs, and a scanner reconstructs an image from the timing of those returns. It's real-time, non-invasive, and unlike X-rays, there's no ionizing radiation involved.</p>
+
+        <p>But there's a catch. When those sound waves bounce back, some arrive in phase and some arrive out of phase. This interference creates a grainy, speckled pattern across the image &mdash; <strong>speckle noise</strong>. It's not random static; it's baked into how ultrasound physics works. And it directly degrades the resolution and contrast that doctors rely on for diagnosis.</p>
+
+        <p>Traditional filters like mean and median can reduce some of this noise, but they blur edges and destroy fine details in the process. The image gets smoother, sure, but the structures that matter &mdash; organ boundaries, tissue textures, lesion margins &mdash; get smudged along with the noise.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>What Existing Methods Do</h2>
+
+        <p>Deep learning brought better results. A few notable approaches:</p>
+
+        <p><strong>Multi-Level Wavelet CNN (MWCNN)</strong> breaks the image down into frequency sub-bands using wavelet transforms, processes each band with convolutional layers, then reconstructs the image. It's essentially a modified U-Net that works in the wavelet domain instead of the pixel domain. Decent results, but it treats all features equally regardless of importance.</p>
+
+        <p><strong>DnCNN</strong> takes a different angle &mdash; instead of trying to predict the clean image directly, it learns the noise pattern itself. Subtract the predicted noise from the input and you get the clean image. Simple idea, works well for Gaussian noise, but struggles with speckle because speckle is multiplicative, not additive.</p>
+
+        <p><strong>RIDNet</strong> introduced the idea of feature attention &mdash; a channel attention module that weighs which feature maps matter more. But it only looks at channel importance. It doesn't consider where in the image each feature is spatially important.</p>
+
+        <p><strong>PRIDNet</strong> added multi-scale pyramid pooling and a kernel selection stage on top of channel attention. Better, but still treats features from different spatial locations the same way.</p>
+
+        <p>The common thread: none of these architectures pay attention to both <strong>what</strong> features matter (channel) and <strong>where</strong> they matter (spatial) at the same time.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>The Proposed Architecture</h2>
+
+        <p>The method has three stages, each solving a different part of the problem:</p>
+
+        <div class="diagram">
+            <span class="flow">Input Image</span>
+            <span class="arrow"> &rarr; </span>
+            <span class="flow">Channel + Spatial Attention</span>
+            <span class="arrow"> &rarr; </span>
+            <span class="flow">SA-U-Net (Denoising)</span>
+            <span class="arrow"> &rarr; </span>
+            <span class="flow">Kernel Selection</span>
+            <span class="arrow"> &rarr; </span>
+            <span class="flow">Clean Output</span>
+            <p class="label">Overall pipeline: attention first, then denoise, then adaptively select the right filter sizes</p>
+        </div>
+
+        <h3>Stage 1: Dual Attention</h3>
+
+        <p><strong>Channel attention</strong> answers: which feature maps are most useful for denoising? It squeezes all the spatial information down using global average pooling, runs it through a small network, and produces a weight for each channel. Important features get amplified, irrelevant ones get suppressed.</p>
+
+        <p><strong>Spatial attention</strong> answers: where in the image should the network focus? It takes the feature maps, applies max-pooling and average-pooling across channels to create a 2D importance map, then runs a convolution to produce a mask. Regions with meaningful structure get highlighted; flat noisy areas get de-emphasized.</p>
+
+        <p>Combining both means the network knows which features matter and where they matter. Channel attention picks the right channels; spatial attention tells it where to look within those channels. The two are added together (not multiplied) to keep gradients flowing smoothly during training.</p>
+
+        <h3>Stage 2: Spatial Attention U-Net</h3>
+
+        <p>The core denoising happens in a U-Net &mdash; an encoder-decoder architecture shaped like the letter U. The encoder compresses the image through successive convolution and pooling layers, extracting increasingly abstract features. The bottleneck at the bottom holds only the most essential representation. The decoder then upsamples back to full resolution.</p>
+
+        <p>Standard U-Nets use skip connections &mdash; direct links from each encoder level to the corresponding decoder level &mdash; to preserve spatial detail that would otherwise be lost during compression. But here's the problem: those skip connections also carry noise from the encoder straight into the decoder.</p>
+
+        <p>The fix: <strong>spatial attention gates at every skip connection</strong>. Before the encoder's features reach the decoder, they pass through a spatial attention filter that suppresses irrelevant and noisy information while keeping the structural details intact. The decoder gets clean spatial context instead of a mix of signal and noise.</p>
+
+        <p>This SA-U-Net runs five times in parallel with different kernel sizes, creating a pyramid structure. Each branch captures noise at a different scale, and the results are concatenated at the end.</p>
+
+        <h3>Stage 3: Kernel Selection</h3>
+
+        <p>Different regions of an image need different levels of filtering. Fine textures need small, precise kernels. Large smooth areas can use bigger kernels for stronger denoising. Rather than picking one kernel size for everything, this stage lets the network <strong>choose automatically</strong>.</p>
+
+        <p>Three parallel convolutions with different kernel sizes process the features. A global average pooling followed by two fully connected layers produces selection weights. The network learns which kernel size works best for each channel, adapting its receptive field on the fly. The process is called Selective Kernel convolution &mdash; split the input, fuse information across branches, then select the best combination.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>Training</h2>
+
+        <p>The model was trained on clinical ultrasound images resized to 512&times;512 pixels, with artificial speckle noise added at five variance levels: 0.01, 0.07, 0.1, 0.4, and 0.9. Data augmentation included 90&deg;/180&deg;/270&deg; rotations and horizontal flips. The optimizer was Adam, and the loss function was mean squared error between the denoised output and the original clean image. Training took about 6 hours across 500 epochs.</p>
+
+        <h2>Results</h2>
+
+        <p>The method was compared against RIDNET and MWCNN across all five noise levels, measured by PSNR (higher is better &mdash; measures signal quality), SSIM (higher is better &mdash; measures structural similarity to the original), and visual inspection.</p>
+
+        <table class="metric-table">
+            <tr>
+                <th>Method</th>
+                <th>PSNR (avg)</th>
+                <th>SSIM (avg)</th>
+                <th>Verdict</th>
+            </tr>
+            <tr>
+                <td>RIDNET</td>
+                <td>22.4</td>
+                <td>~0.78</td>
+                <td>Blurred structures, residual speckle at high noise</td>
+            </tr>
+            <tr>
+                <td>MWCNN</td>
+                <td>23.0</td>
+                <td>~0.83</td>
+                <td>Better, but lost structural detail</td>
+            </tr>
+            <tr>
+                <td>Proposed (SA-U-Net)</td>
+                <td><strong>29.4</strong></td>
+                <td><strong>~0.85</strong></td>
+                <td>Best denoising while preserving edges</td>
+            </tr>
+        </table>
+
+        <p>At low noise (0.01), the proposed method hit a PSNR of <span class="highlight">38.18</span> and SSIM of <span class="highlight">0.961</span>. Even at the highest noise level (0.9), it maintained recognisable structures where the other methods produced visibly degraded outputs. The key difference is edge preservation &mdash; the spatial attention gates in the skip connections prevent noise from leaking back into the reconstructed image while keeping organ boundaries and tissue boundaries sharp.</p>
+
+        <div class="separator">&bull; &bull; &bull;</div>
+
+        <h2>Why It Works</h2>
+
+        <p>The insight is simple: not all features are equally important, and not all regions of the image need the same treatment. By asking <strong>"which channels matter?"</strong> and <strong>"where in the image should we focus?"</strong> before denoising, the network avoids the blind, uniform processing that makes other methods either leave noise behind or blur structures away.</p>
+
+        <p>The spatial attention on skip connections is the key contribution. Standard U-Nets blindly forward everything from encoder to decoder. Adding a learned gate that filters what gets through means the decoder works with cleaner context, producing sharper outputs without the noise that typically rides along skip connections.</p>
+
+        <p>For clinical ultrasound, where the difference between a clear organ boundary and a blurred one can affect diagnosis, this matters.</p>
+
+        <p class="signature">&mdash; th3r7n</p>
+    </div>
+
+    <script>
+        var canvas = document.getElementById('aurora-canvas');
+        var ctx = canvas.getContext('2d');
+        var scrollOffset = 0;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        window.addEventListener('scroll', function() {
+            scrollOffset = window.scrollY;
+        });
+
+        var bands = [
+            { y: 0.25, speed: 0.3, color1: [0, 255, 120], color2: [0, 180, 255], width: 0.18, amp: 40 },
+            { y: 0.40, speed: 0.2, color1: [80, 0, 255],  color2: [0, 255, 180], width: 0.14, amp: 50 },
+            { y: 0.55, speed: 0.4, color1: [0, 200, 255], color2: [120, 0, 255], width: 0.12, amp: 35 },
+            { y: 0.70, speed: 0.25, color1: [0, 255, 100], color2: [80, 50, 255], width: 0.10, amp: 45 }
+        ];
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function draw(time) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            var angle = scrollOffset * 0.015;
+            var shiftX = scrollOffset * 0.12;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle * Math.PI / 180);
+            ctx.translate(-canvas.width / 2 + shiftX, -canvas.height / 2);
+
+            for (var b = 0; b < bands.length; b++) {
+                var band = bands[b];
+                var baseY = canvas.height * band.y;
+                var bandH = canvas.height * band.width;
+
+                ctx.beginPath();
+                ctx.moveTo(-100, baseY + bandH);
+
+                for (var x = -100; x <= canvas.width + 100; x += 4) {
+                    var wave1 = Math.sin((x * 0.003) + (time * 0.0005 * band.speed)) * band.amp;
+                    var wave2 = Math.sin((x * 0.007) + (time * 0.0003 * band.speed) + 2) * band.amp * 0.5;
+                    var wave3 = Math.sin((x * 0.001) + (time * 0.0002)) * band.amp * 0.8;
+                    var y = baseY + wave1 + wave2 + wave3;
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.lineTo(canvas.width + 100, baseY + bandH);
+
+                for (var x2 = canvas.width + 100; x2 >= -100; x2 -= 4) {
+                    var wave1b = Math.sin((x2 * 0.003) + (time * 0.0005 * band.speed) + 1) * band.amp * 0.6;
+                    var wave2b = Math.sin((x2 * 0.005) + (time * 0.0004 * band.speed)) * band.amp * 0.3;
+                    var yb = baseY + bandH + wave1b + wave2b;
+                    ctx.lineTo(x2, yb);
+                }
+
+                ctx.closePath();
+
+                var grad = ctx.createLinearGradient(0, baseY - band.amp, canvas.width, baseY + bandH + band.amp);
+                var c1 = band.color1;
+                var c2 = band.color2;
+                grad.addColorStop(0, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',0)');
+                grad.addColorStop(0.3, 'rgba(' + c1[0] + ',' + c1[1] + ',' + c1[2] + ',0.35)');
+                grad.addColorStop(0.5, 'rgba(' + lerp(c1[0],c2[0],0.5) + ',' + lerp(c1[1],c2[1],0.5) + ',' + lerp(c1[2],c2[2],0.5) + ',0.5)');
+                grad.addColorStop(0.7, 'rgba(' + c2[0] + ',' + c2[1] + ',' + c2[2] + ',0.35)');
+                grad.addColorStop(1, 'rgba(' + c2[0] + ',' + c2[1] + ',' + c2[2] + ',0)');
+
+                ctx.fillStyle = grad;
+                ctx.filter = 'blur(20px)';
+                ctx.fill();
+                ctx.filter = 'none';
+            }
+
+            ctx.restore();
+            requestAnimationFrame(draw);
+        }
+
+        requestAnimationFrame(draw);
+    </script>
+</body>
+</html>
