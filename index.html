@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>And I was wrong</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #fafafa;
+            color: #1a1a1a;
+            font-family: 'Merriweather', Georgia, serif;
+            line-height: 1.9;
+            font-size: 17px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 60px 24px 100px;
+        }
+
+        .blog-header {
+            margin-bottom: 48px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 32px;
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #888;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+
+        .intro {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        p {
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 26px;
+            font-weight: 600;
+            color: #111;
+            margin-top: 56px;
+            margin-bottom: 24px;
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #222;
+            margin-top: 40px;
+            margin-bottom: 16px;
+        }
+
+        strong {
+            font-weight: 700;
+            color: #111;
+        }
+
+        .separator {
+            text-align: center;
+            margin: 48px 0;
+            color: #ccc;
+            font-size: 24px;
+            letter-spacing: 12px;
+        }
+
+        .image-block {
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .image-block img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        }
+
+        .image-block .caption {
+            font-size: 13px;
+            color: #999;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .closing {
+            margin-top: 56px;
+            padding-top: 32px;
+            border-top: 1px solid #e0e0e0;
+            font-style: italic;
+            color: #444;
+            text-align: center;
+            line-height: 2;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 32px 18px 60px;
+            }
+            h1 {
+                font-size: 30px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+            body {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="blog-header">
+            <h1>And I was wrong</h1>
+            <p class="subtitle">June 2026</p>
+        </div>
+
+        <p class="intro">This is not a blog on AI technical details. This is a blog about small character change that I regretted in a short span. Hope you have a good read.</p>
+
+        <p>If a person starts blabbering about AI jargon to me in December 2025, I would have smiled and never cared, but it got changed in the month of February altogether.</p>
+
+        <p>Back in 2021 I got an opportunity to get involved in a convolutional neural network project for the curriculum [link] thanks to the guide working on publishing it, so I can now just refer it. It was pretty vague and went over my head but somehow we managed to pull off a research level work on it.</p>
+
+        <p>For the project, I did have an idea on Neural Networks, Attention and weight structures. But once it's finished I left all the work as it is, maybe a mistake?</p>
+
+        <div class="separator">. . .</div>
+
+        <h2>What Actually Changed</h2>
+
+        <p>When I worked on the CNN project in 2021, the way a neural network processed data was through small filters — a tiny window that slides across an image, pixel by pixel, picking up edges, textures, curves. Stack enough filters and the network starts recognizing things: this set of edges is an eye, that texture is fur, combine them and you get a cat. But each filter only sees its own small area. It doesn't know what's happening far away in the image. That's the core limitation — <strong>locality</strong>. A CNN is strong, but it's looking through a keyhole.</p>
+
+        <div class="image-block">
+            <img src="https://ujjwalkarn.me/wp-content/uploads/2016/08/giphy.gif" alt="CNN filter sliding across an image">
+            <p class="caption">A CNN filter sliding across an image — it only sees a small patch at a time</p>
+        </div>
+
+        <p>The weights I learned about — those numbers the network keeps adjusting during training to get better — all lived inside these local filters. Backpropagation pushed errors backward through layers, nudging weights until they became useful. Attention, the concept I vaguely touched during the project, was the piece I didn't fully get at the time.</p>
+
+        <p>Let me explain attention from what I already knew:</p>
+
+        <p>In a CNN, if you're processing pixel 42, you only know about a few pixels around it — say 38 to 46, depending on filter size. Pixel 200? You have no clue what's there. But what if pixel 200 is the <strong>most important context</strong> for understanding pixel 42? In a CNN, that information has to survive through dozens of layers, slowly passing forward, getting weaker with each step.</p>
+
+        <p><strong>Attention just removes that problem.</strong> Instead of a small sliding window, attention computes a relevance score between <strong>every</strong> element and <strong>every other</strong> element — all at once. Pixel 42 directly checks with pixel 200: "are you relevant to me?" and gets a weighted answer back. No waiting. No distance problem. Every part of the input can directly talk to every other part.</p>
+
+        <div class="image-block">
+            <img src="https://jalammar.github.io/images/t/transformer_self-attention_visualization.png" alt="Self-attention visualization">
+            <p class="caption">Self-attention — every word attends to every other word at once</p>
+        </div>
+
+        <p>How it works is through three things — <strong>Query, Key, and Value</strong>. Simple way to think about it: every element generates a question (Query), a tag describing itself (Key), and the actual data it carries (Value). To find out how relevant two elements are to each other, you match one's Query against another's Key. Good match means the Value gets high importance. Do this for every pair in the input and you get a full map of what matters to what.</p>
+
+        <div class="image-block">
+            <img src="https://jalammar.github.io/images/t/transformer_self_attention_vectors.png" alt="Query Key Value mechanism">
+            <p class="caption">Query, Key, Value — the three projections that make attention work</p>
+        </div>
+
+        <p>That's the difference. The weights in my CNN were local filter weights — they learned what a vertical edge looks like or what a texture boundary is. The weights in attention are <strong>relationship weights</strong> — they learn what's relevant to what across the entire input. Completely different type of learning.</p>
+
+        <p>Back then, I had the building blocks — neurons, weights, backpropagation, layers. What I didn't have was this one idea running at scale: let every part of the input talk to every other part, and let the network figure out which conversations matter. That's it. That single change is what turned narrow deep learning models into what everyone now calls AI.</p>
+
+        <p>The CNN I worked on could look at an image and classify it. The same core math — neurons, weights, activation functions, gradient descent — scaled up with attention, can now read code, hold conversations, and run commands in my terminal. Same ingredients. Different recipe. The recipe was attention.</p>
+
+        <div class="separator">. . .</div>
+
+        <h2>Back to the Story</h2>
+
+        <p>Around December OpenAI launches Ghibli Art, a marketing campaign designed to make everyone know about AI and a scientific disaster on giving wrong reference to the technology.</p>
+
+        <p>Soon after all the social media platforms are filled with Ghibli Art which led me to mute a few tweets or conversations if they contained AI. My daily driver was Twitter and I had muted everyone that spoke about AI image generation, pity me. At the same time, around February Anthropic drops Claude Code, a Terminal User Interface and a next version of Claude web.</p>
+
+        <h3>What is a TUI?</h3>
+
+        <p>So the daily driver of work for all of us includes interacting with UI to easily identify and use applications but at the system side it's just code and commands, all user interaction triggers code. A TUI means you effectively stand in between the user interface and the code getting triggered.</p>
+
+        <p>So the question would be why does it matter?</p>
+
+        <p>An effective TUI means the whole system can be controlled within the terminal app including all access to applications and workflows happening in the system. Sounds awesome right? A terminal doing all the work. Again the social media exploded with Claude Code's capability and I had all the people bragging about it muted in Twitter.</p>
+
+        <p>Two months later in April I finally heard and tried Claude Code. It was a great experience and my daily driver now includes Claude Code and it effortlessly does almost 40% of my work.</p>
+
+        <p>If I had to explain vaguely about its measuring system, I would put it this way. All AI models measure the work done for you through tokens. The more tokens you use per session the more number of neurons created and assigned weights, it also includes giving attention to the right set of neurons to get back correct results without hallucinating much. At the end it's all about how neurons are optimised and used in a manner that defines the performance of a model? That's a topic to explore and for another blog another time.</p>
+
+        <div class="closing">
+            <p>What a privilege to be a man, to live without food, money, peace but not a day without a single fight for something we wanted the most.</p>
+        </div>
+    </div>
+</body>
+</html>
